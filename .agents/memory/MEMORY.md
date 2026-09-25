@@ -1,0 +1,1 @@
+- [Generated client DOM typings](generated-client-dom-typings.md) — Orval's fetch helpers use `Headers.entries()`, so shared client TypeScript configs need `dom.iterable`.

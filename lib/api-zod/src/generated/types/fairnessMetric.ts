@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
+export interface FairnessMetric {
+  label: string;
+  value: number;
+  delta: number;
   status: string;
 }

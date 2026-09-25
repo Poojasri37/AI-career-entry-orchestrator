@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Inclusive Workforce Orchestrator"
+description = "A dark-mode executive AI workspace for discovering transferable skills, matching talent inclusively, and auditing workforce decisions with SAP-ready compliance signals."
+version = "1.0.0"
+id = "artifacts/inclusive-workforce-orchestrator"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22835
+
+[services.development]
+run = "pnpm --filter @workspace/inclusive-workforce-orchestrator run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/inclusive-workforce-orchestrator", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/inclusive-workforce-orchestrator/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22835"
+BASE_PATH = "/"

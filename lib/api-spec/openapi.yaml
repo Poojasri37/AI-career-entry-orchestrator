@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: agents
+    description: Inclusive Workforce Orchestrator agent operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,63 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /agent/skills-discovery:
+    post:
+      operationId: discoverSkills
+      tags: [agents]
+      summary: Discover transferable skills
+      description: Uses conversational context to extract capability nodes from a career transition story.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SkillsDiscoveryInput"
+      responses:
+        "200":
+          description: Skills discovery result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillsDiscoveryResult"
+  /agent/inclusive-match:
+    post:
+      operationId: calculateInclusiveMatch
+      tags: [agents]
+      summary: Calculate inclusive capability match
+      description: Compares traditional screening with a semantic capability-vector match.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InclusiveMatchInput"
+      responses:
+        "200":
+          description: Inclusive matching result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InclusiveMatchResult"
+  /agent/audit-compliance:
+    post:
+      operationId: generateAuditCompliance
+      tags: [agents]
+      summary: Generate compliance audit preview
+      description: Generates enterprise-style fairness metrics and audit logs for SAP SuccessFactors preview testing.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuditComplianceInput"
+      responses:
+        "200":
+          description: Compliance audit result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditComplianceResult"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +92,133 @@ components:
           type: string
       required:
         - status
+    CapabilityNode:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        category:
+          type: string
+        confidence:
+          type: number
+        source:
+          type: string
+      required: [id, label, category, confidence, source]
+    SkillsDiscoveryInput:
+      type: object
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+        model:
+          type: string
+        apiKey:
+          type: ["string", "null"]
+      required: [prompt]
+    SkillsDiscoveryResult:
+      type: object
+      properties:
+        reply:
+          type: string
+        capabilities:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityNode"
+        nextPrompt:
+          type: string
+        provider:
+          type: string
+      required: [reply, capabilities, nextPrompt, provider]
+    InclusiveMatchInput:
+      type: object
+      properties:
+        candidate:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          minLength: 1
+      required: [candidate, role]
+    MatchSignal:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+        note:
+          type: string
+      required: [label, value, note]
+    InclusiveMatchResult:
+      type: object
+      properties:
+        traditionalScore:
+          type: number
+        inclusiveScore:
+          type: number
+        capabilityOverlap:
+          type: number
+        traditionalSignals:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatchSignal"
+        inclusiveSignals:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatchSignal"
+        recommendation:
+          type: string
+      required: [traditionalScore, inclusiveScore, capabilityOverlap, traditionalSignals, inclusiveSignals, recommendation]
+    AuditComplianceInput:
+      type: object
+      properties:
+        scope:
+          type: string
+        sampleSize:
+          type: integer
+          minimum: 1
+      required: [scope]
+    FairnessMetric:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+        delta:
+          type: number
+        status:
+          type: string
+      required: [label, value, delta, status]
+    AuditLog:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        event:
+          type: string
+        actor:
+          type: string
+        result:
+          type: string
+      required: [timestamp, event, actor, result]
+    AuditComplianceResult:
+      type: object
+      properties:
+        overallScore:
+          type: number
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/FairnessMetric"
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLog"
+        successFactorsPayload:
+          type: object
+          additionalProperties: true
+      required: [overallScore, metrics, logs, successFactorsPayload]
 

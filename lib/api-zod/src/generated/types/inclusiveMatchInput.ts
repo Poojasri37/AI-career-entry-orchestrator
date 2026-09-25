@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
-  status: string;
+export interface InclusiveMatchInput {
+  /** @minLength 1 */
+  candidate: string;
+  /** @minLength 1 */
+  role: string;
 }
